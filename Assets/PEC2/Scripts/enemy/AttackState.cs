@@ -39,7 +39,7 @@ public class AttackState : IEnemyState
         {
             actualTimeBetweenShoots = 0;
             myEnemy.GetComponent<AudioSource>().PlayOneShot(myEnemy.shootSound);
-            if(Random.value < 0.5f) col.gameObject.GetComponent<HealthScript>().Hit(myEnemy.damageForce);
+            if(Random.value <= 0.75f) col.gameObject.GetComponent<HealthScript>().Hit(myEnemy.damageForce);
         }
     }
 

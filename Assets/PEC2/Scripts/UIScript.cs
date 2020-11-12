@@ -5,16 +5,21 @@ using UnityEngine;
 
 public class UIScript : MonoBehaviour
 {
+    public int numKeys = 1;
     public GameObject lifeBar;
     public GameObject shieldBar;
     public GameObject reloadTxt;
+    public GameObject reloadingTxt;
+    public GameObject keysList;
     public GameObject akAmmo;
     public GameObject pistolAmmo;
     public TextMeshProUGUI totalAmmo;
 
+    private GameObject gameController;
     void Start()
     {
-        
+        gameController = GameObject.FindGameObjectWithTag("Player");
+        SetKeys();
     }
 
     void Update()
@@ -25,12 +30,12 @@ public class UIScript : MonoBehaviour
     public void SetBars(float life, float shield)
     {
         var completLifeWidth = lifeBar.transform.GetChild(0).GetComponent<RectTransform>().rect.width;
-        var currentLifeWidth = completLifeWidth * life / GetComponent<HealthScript>().initLife;
+        var currentLifeWidth = completLifeWidth * life / gameController.GetComponent<HealthScript>().initLife;
         if (currentLifeWidth <= 0) currentLifeWidth = 0;
         lifeBar.transform.GetChild(0).GetChild(0).transform.GetComponent<RectTransform>().offsetMin = new Vector2(currentLifeWidth, lifeBar.transform.GetChild(0).GetChild(0).transform.GetComponent<RectTransform>().offsetMin.y);
 
         var completShieldWidth = shieldBar.transform.GetChild(0).GetComponent<RectTransform>().rect.width;
-        var currentShieldWidth = completShieldWidth * shield / GetComponent<HealthScript>().initShield;
+        var currentShieldWidth = completShieldWidth * shield / gameController.GetComponent<HealthScript>().initShield;
         if (currentShieldWidth <= 0) currentShieldWidth = 0;
         shieldBar.transform.GetChild(0).GetChild(0).transform.GetComponent<RectTransform>().offsetMin = new Vector2(currentShieldWidth, shieldBar.transform.GetChild(0).GetChild(0).transform.GetComponent<RectTransform>().offsetMin.y);
     }
@@ -38,11 +43,23 @@ public class UIScript : MonoBehaviour
     public void ActivateReloadText()
     {
         reloadTxt.SetActive(true);
+        reloadingTxt.SetActive(false);
     }
 
     public void DeactivateReloadText()
     {
         reloadTxt.SetActive(false);
+    }
+
+    public void ActivateReloading()
+    {
+        reloadingTxt.SetActive(true);
+        reloadTxt.SetActive(false);
+    }
+
+    public void DeactivateReloading()
+    {
+        reloadingTxt.SetActive(false);
     }
 
     public void ActivateAKAmmo(int currentAmmo, int totalAkAmmo)
@@ -85,5 +102,35 @@ public class UIScript : MonoBehaviour
         }
         if (currentAmmo <= 2) ActivateReloadText();
         else DeactivateReloadText();
+    }
+
+    private void SetKeys()
+    {
+        for (int i = 0; i < keysList.transform.childCount; i++)
+        {
+            if (i < numKeys) keysList.transform.GetChild(i).gameObject.SetActive(true);
+        }
+    }
+
+    public void PlusKeys()
+    {
+        if (numKeys == 3) return;
+        numKeys++;
+        for (int i = 0; i < keysList.transform.childCount; i++)
+        {
+            if (i < numKeys) keysList.transform.GetChild(i).gameObject.SetActive(true);
+            else keysList.transform.GetChild(i).gameObject.SetActive(false);
+        }
+    }
+
+    public void SubsKeys()
+    {
+        if (numKeys == 0) return;
+        numKeys--;
+        for (int i = 0; i < keysList.transform.childCount; i++)
+        {
+            if (i < numKeys) keysList.transform.GetChild(i).gameObject.SetActive(true);
+            else keysList.transform.GetChild(i).gameObject.SetActive(false);
+        }
     }
 }

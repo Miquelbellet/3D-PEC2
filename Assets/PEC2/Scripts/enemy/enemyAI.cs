@@ -14,6 +14,7 @@ public class enemyAI : MonoBehaviour
     [HideInInspector] public Transform[] waypoints;
 
     public Light myLight;
+    public AudioClip explosionClip;
     public GameObject explosionPS;
     public AudioClip shootSound;
     public float life;
@@ -23,8 +24,15 @@ public class enemyAI : MonoBehaviour
     public float shootHeight;
     public GameObject waypointsParent;
 
+    private GameObject player;
+    private GameObject gameManager;
+    private bool dead;
+
     void Start()
     {
+        player = GameObject.FindGameObjectWithTag("Player");
+        gameManager = GameObject.FindGameObjectWithTag("GameController");
+
         patrolState = new PatrolState(this);
         alertState = new AlertState(this);
         attackState = new AttackState(this);
@@ -41,11 +49,15 @@ public class enemyAI : MonoBehaviour
     void Update()
     {
         currentState.UpdateState();
-        if (life < 0)
+        if (life < 0 && !dead)
         {
+            dead = true;
+            player.GetComponent<ExtraItemsScript>().DropRandomItem(transform.position);
+            if(Random.value > 0.5f) gameManager.GetComponent<UIScript>().PlusKeys();
+            GetComponent<AudioSource>().PlayOneShot(explosionClip);
             var explosion = Instantiate(explosionPS, gameObject.transform.position, Quaternion.Euler(0, 0, 0));
             Destroy(explosion, 5f);
-            Destroy(gameObject);
+            Destroy(gameObject, 1f);
         }
     }
 
@@ -57,16 +69,16 @@ public class enemyAI : MonoBehaviour
 
     private void OnTriggerEnter(Collider col)
     {
-        currentState.OnTriggerEnter(col);
+        if (!dead) currentState.OnTriggerEnter(col);
     }
 
     private void OnTriggerStay(Collider col)
     {
-        currentState.OnTriggerStay(col);
+        if (!dead) currentState.OnTriggerStay(col);
     }
 
     private void OnTriggerExit(Collider col)
     {
-        currentState.OnTriggerExit(col);
+        if(!dead) currentState.OnTriggerExit(col);
     }
 }

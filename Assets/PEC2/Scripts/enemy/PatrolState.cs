@@ -16,9 +16,11 @@ public class PatrolState : IEnemyState
     {
         myEnemy.myLight.color = Color.green;
         myEnemy.navMeshAgent.destination = myEnemy.waypoints[nextWayPoint].position;
-        if (myEnemy.navMeshAgent.remainingDistance <= myEnemy.navMeshAgent.stoppingDistance)
+        if (myEnemy.navMeshAgent.gameObject.transform.position.x == myEnemy.waypoints[nextWayPoint].position.x &&
+            myEnemy.navMeshAgent.gameObject.transform.position.z == myEnemy.waypoints[nextWayPoint].position.z)
         {
-            nextWayPoint = (nextWayPoint + 1) % myEnemy.waypoints.Length;
+            nextWayPoint++;
+            if (nextWayPoint >= myEnemy.waypoints.Length) nextWayPoint = 0;
         }
     }
 

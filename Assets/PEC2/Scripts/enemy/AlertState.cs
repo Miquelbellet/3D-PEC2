@@ -30,14 +30,14 @@ public class AlertState : IEnemyState
             RaycastHit hit;
             if (Physics.Raycast(
                 new Ray(
-                new Vector3(myEnemy.transform.position.x, myEnemy.transform.position.y - 2f, myEnemy.transform.position.z),
+                new Vector3(myEnemy.transform.position.x, myEnemy.transform.position.y - 4f, myEnemy.transform.position.z),
                 myEnemy.transform.forward * 100f),
                 out hit))
             {
                 if(hit.collider.gameObject.tag == "Player")
                 {
                     var distance = Vector2.Distance(myEnemy.transform.position, hit.collider.transform.position);
-                    if (distance < myEnemy.GetComponent<SphereCollider>().radius * 2) GoToAttackState();
+                    if (distance <= myEnemy.GetComponent<SphereCollider>().radius * 3f) GoToAttackState();
                 }
             }
         }

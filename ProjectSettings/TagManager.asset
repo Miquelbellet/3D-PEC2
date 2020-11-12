@@ -5,6 +5,12 @@ TagManager:
   serializedVersion: 2
   tags:
   - Enemy
+  - LifeBox
+  - ShieldBox
+  - AmmoBox
+  - Terrain
+  - DeadZone
+  - FinalZone
   layers:
   - Default
   - TransparentFX

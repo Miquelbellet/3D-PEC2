@@ -1,21 +1,24 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class HealthScript : MonoBehaviour
 {
     public float life;
     public float shield;
+    public AudioClip playerHitted;
+    public GameObject gameoverPanel;
 
     [HideInInspector] public float initLife;
     [HideInInspector] public float initShield;
 
-    private UIScript uiScript;
+    private GameObject gameController;
     void Start()
     {
         initLife = life;
         initShield = shield;
-        uiScript = GetComponent<UIScript>();
+        gameController = GameObject.FindGameObjectWithTag("GameController");
     }
 
     void Update()
@@ -25,7 +28,13 @@ public class HealthScript : MonoBehaviour
 
     private void Dead()
     {
-        Debug.Log("Player Dead");
+        gameoverPanel.SetActive(true);
+        Invoke("GoToMenu", 3f);
+    }
+
+    private void GoToMenu()
+    {
+        SceneManager.LoadScene("Menu");
     }
 
     public void Hit(float damage)
@@ -36,6 +45,26 @@ public class HealthScript : MonoBehaviour
             life -= damage * 0.2f;
         }
         else life -= damage;
-        uiScript.SetBars(life, shield);
+        gameController.GetComponent<UIScript>().SetBars(life, shield);
+        GetComponent<AudioSource>().PlayOneShot(playerHitted);
+    }
+
+    public void PlusHealth(float plusHelath)
+    {
+        life += plusHelath;
+        if (life > initLife) life = initLife;
+        gameController.GetComponent<UIScript>().SetBars(life, shield);
+    }
+
+    public void PlusShield(float plusShield)
+    {
+        shield += plusShield;
+        if (shield > initShield) shield = initShield;
+        gameController.GetComponent<UIScript>().SetBars(life, shield);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.transform.tag == "DeadZone") Dead();
     }
 }

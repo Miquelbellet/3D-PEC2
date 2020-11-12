@@ -32,6 +32,7 @@ public class WeaponScript : MonoBehaviour
     [Header("General Config")]
     public AudioClip chooseAKClip;
     public AudioClip choosePistolClip;
+    public AudioClip reloadingClip;
 
     private enum Weapons { AK, Pistol };
     private Weapons currentWeapon;
@@ -40,18 +41,23 @@ public class WeaponScript : MonoBehaviour
     private GameObject Pistol;
     private AudioSource weaponAS;
     private bool hasShot;
-    private bool reloading;
+    private bool reloadingAK;
+    private bool reloadingPistol;
     private float time;
 
     private int AK_Ammo = 20;
     private int currentAkAmmo = 20;
+    private int AK_MaxAmmo;
     private int Pistol_Ammo = 8;
     private int currentPistolAmmo = 8;
+    private int P_MaxAmmo;
 
     void Start()
     {
         gameManager = GameObject.FindGameObjectWithTag("GameController");
         weaponAS = GetComponent<AudioSource>();
+        AK_MaxAmmo = AK_totalAmmo;
+        P_MaxAmmo = P_totalAmmo;
         AK = transform.GetChild(0).gameObject;
         Pistol = transform.GetChild(1).gameObject;
         ChangeWeapon(Weapons.AK);
@@ -72,8 +78,8 @@ public class WeaponScript : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.R))
         {
-            if (currentWeapon == Weapons.AK) ReloadingAK();
-            else if (currentWeapon == Weapons.Pistol) ReloadingPistol();
+            if (currentWeapon == Weapons.AK && currentAkAmmo < AK_Ammo) ReloadingAK();
+            else if (currentWeapon == Weapons.Pistol && currentPistolAmmo < Pistol_Ammo) ReloadingPistol();
         }
     }
 
@@ -85,18 +91,20 @@ public class WeaponScript : MonoBehaviour
             AK.gameObject.SetActive(true);
             Pistol.gameObject.SetActive(false);
             gameManager.GetComponent<UIScript>().ActivateAKAmmo(currentAkAmmo, AK_totalAmmo);
+            GetComponent<AudioSource>().PlayOneShot(chooseAKClip);
         }
         else if (newWeapon == Weapons.Pistol)
         {
             AK.gameObject.SetActive(false);
             Pistol.gameObject.SetActive(true);
             gameManager.GetComponent<UIScript>().ActivatePistolAmmo(currentPistolAmmo, P_totalAmmo);
+            GetComponent<AudioSource>().PlayOneShot(choosePistolClip);
         }
     }
 
     private void AKShoot()
     {
-        if (!hasShot && !reloading && AK_totalAmmo > 0 && time <= AK_shootingCadency)
+        if (!hasShot && !reloadingAK && AK_totalAmmo > 0 && time <= AK_shootingCadency)
         {
             hasShot = true;
             weaponAS.PlayOneShot(AK_fireClip);
@@ -135,7 +143,7 @@ public class WeaponScript : MonoBehaviour
 
     private void PistolShoot()
     {
-        if (!hasShot && !reloading && P_totalAmmo > 0 && time <= P_shootingCadency)
+        if (!hasShot && !reloadingPistol && P_totalAmmo > 0 && time <= P_shootingCadency)
         {
             hasShot = true;
             weaponAS.PlayOneShot(P_fireClip);
@@ -174,20 +182,25 @@ public class WeaponScript : MonoBehaviour
 
     private void ReloadingAK()
     {
-        reloading = true;
+        reloadingAK = true;
+        gameManager.GetComponent<UIScript>().ActivateReloading();
+        GetComponent<AudioSource>().PlayOneShot(reloadingClip);
         StartCoroutine(waitReloadingAK(AK_reloadingTime));
     }
 
     private void ReloadingPistol()
     {
-        reloading = true;
+        reloadingPistol = true;
+        gameManager.GetComponent<UIScript>().ActivateReloading();
+        GetComponent<AudioSource>().PlayOneShot(reloadingClip);
         StartCoroutine(waitReloadingPistol(P_reloadingTime));
     }
 
     private IEnumerator waitReloadingAK(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
-        reloading = false;
+        reloadingAK = false;
+        gameManager.GetComponent<UIScript>().DeactivateReloading();
         if (AK_totalAmmo < AK_Ammo) currentAkAmmo = AK_totalAmmo;
         else currentAkAmmo = AK_Ammo;
         gameManager.GetComponent<UIScript>().SetAkAmmo(currentAkAmmo, AK_totalAmmo);
@@ -196,9 +209,26 @@ public class WeaponScript : MonoBehaviour
     private IEnumerator waitReloadingPistol(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
-        reloading = false;
+        reloadingPistol = false;
+        gameManager.GetComponent<UIScript>().DeactivateReloading();
         if (P_totalAmmo < Pistol_Ammo) currentPistolAmmo = P_totalAmmo;
         else currentPistolAmmo = Pistol_Ammo;
         gameManager.GetComponent<UIScript>().SetPistolAmmo(currentPistolAmmo, P_totalAmmo);
+    }
+
+    public void PlusAmmo(float plusAmmo)
+    {
+        if (currentWeapon == Weapons.AK)
+        {
+            AK_totalAmmo += (int)plusAmmo;
+            if (AK_totalAmmo > AK_MaxAmmo) AK_totalAmmo = AK_MaxAmmo;
+            gameManager.GetComponent<UIScript>().SetAkAmmo(currentAkAmmo, AK_totalAmmo);
+        }
+        else if (currentWeapon == Weapons.Pistol)
+        {
+            P_totalAmmo += (int)plusAmmo;
+            if (P_totalAmmo > P_MaxAmmo) P_totalAmmo = P_MaxAmmo;
+            gameManager.GetComponent<UIScript>().SetPistolAmmo(currentPistolAmmo, P_totalAmmo);
+        }
     }
 }
