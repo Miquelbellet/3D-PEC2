@@ -2,10 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityStandardAssets.Characters.FirstPerson;
 
 public class FinalZoneScript : MonoBehaviour
 {
     public GameObject CompletedMapText;
+
+    private FirstPersonController FPSController;
+
     void Start()
     {
         
@@ -18,6 +22,8 @@ public class FinalZoneScript : MonoBehaviour
 
     private void GoToMenu()
     {
+        FPSController = FindObjectOfType<FirstPersonController>();
+        FPSController.m_MouseLook.lockCursor = false;
         SceneManager.LoadScene("Menu");
     }
 

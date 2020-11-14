@@ -18,7 +18,7 @@ public class DoorScript : MonoBehaviour
     private bool isOpened;
     private float time;
 
-    void Start()
+    private void Awake()
     {
         gameManager = GameObject.FindGameObjectWithTag("GameController");
         doorRight = transform.GetChild(0).gameObject;

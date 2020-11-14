@@ -182,18 +182,24 @@ public class WeaponScript : MonoBehaviour
 
     private void ReloadingAK()
     {
-        reloadingAK = true;
-        gameManager.GetComponent<UIScript>().ActivateReloading();
-        GetComponent<AudioSource>().PlayOneShot(reloadingClip);
-        StartCoroutine(waitReloadingAK(AK_reloadingTime));
+        if (!reloadingAK && AK_totalAmmo > currentAkAmmo)
+        {
+            reloadingAK = true;
+            gameManager.GetComponent<UIScript>().ActivateReloading();
+            GetComponent<AudioSource>().PlayOneShot(reloadingClip);
+            StartCoroutine(waitReloadingAK(AK_reloadingTime));
+        }
     }
 
     private void ReloadingPistol()
     {
-        reloadingPistol = true;
-        gameManager.GetComponent<UIScript>().ActivateReloading();
-        GetComponent<AudioSource>().PlayOneShot(reloadingClip);
-        StartCoroutine(waitReloadingPistol(P_reloadingTime));
+        if (!reloadingPistol && P_totalAmmo > currentPistolAmmo)
+        {
+            reloadingPistol = true;
+            gameManager.GetComponent<UIScript>().ActivateReloading();
+            GetComponent<AudioSource>().PlayOneShot(reloadingClip);
+            StartCoroutine(waitReloadingPistol(P_reloadingTime));
+        }
     }
 
     private IEnumerator waitReloadingAK(float waitTime)

@@ -36,7 +36,7 @@ public class MenuScript : MonoBehaviour
 
     public void Play()
     {
-        PlayerPrefs.SetInt("Map", mapSelected);
+        PlayerPrefs.SetInt("Map", mapSelected + 1);
         SceneManager.LoadScene("Game");
     }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityStandardAssets.Characters.FirstPerson;
 
 public class HealthScript : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class HealthScript : MonoBehaviour
     [HideInInspector] public float initShield;
 
     private GameObject gameController;
+    private FirstPersonController FPSController;
     void Start()
     {
         initLife = life;
@@ -34,6 +36,8 @@ public class HealthScript : MonoBehaviour
 
     private void GoToMenu()
     {
+        FPSController = FindObjectOfType<FirstPersonController>();
+        FPSController.m_MouseLook.lockCursor = false;
         SceneManager.LoadScene("Menu");
     }
 
