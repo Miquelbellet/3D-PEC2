@@ -43,3 +43,4 @@ Cada vez que eliminas a un enemigo, dejará caer una de estas tres cajas que pod
 Se han implementado sonidos a todas las acciones que pasan durante el juego. Se han utilizado algunos de los sonidos incorporados en el template del asset "SoldierSoundsPack" pero la mayoría se han sacado de la web "https://freesound.org".
 
 ## Vídeo
+[https://youtu.be/RDXqre1xS_Q](https://youtu.be/RDXqre1xS_Q)
